@@ -55,11 +55,17 @@ public class MainActivity extends AppCompatActivity {
         swNewsletter = findViewById(R.id.swNewsletter);
         cbTerms = findViewById(R.id.cbTerms);
 
-
+        setUpCourseSpinner();
         setUpListeners();
         tvLevelValue.setText(String.valueOf(sbLevel.getProgress()));
     }
 
+    private void setUpCourseSpinner() {
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+                this, R.array.courses, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spCourse.setAdapter(adapter);
+    }
 
     private void setUpListeners() {
         // regulamin odblokowuje przycisk wysyłania
@@ -68,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
 
         btnBirthDate.setOnClickListener(v -> showDatePicker());
         btnSubmit.setOnClickListener(v -> {
+
         });
 
         // suwak - trzy metody, więc klasa anonimowa zamiast lambdy
@@ -117,5 +124,34 @@ public class MainActivity extends AppCompatActivity {
 
         dialog.getDatePicker().setMaxDate(System.currentTimeMillis());
         dialog.show();
+
+
+    }
+
+    private void submitForm() {
+        tvSummary.setText(buildSummary());
+
+        Snackbar.make(findViewById(R.id.main), R.string.sent, Snackbar.LENGTH_LONG)
+                .setAction(R.string.undo, v -> tvSummary.setText(""))
+                .show();
+    }
+
+    private String buildSummary() {
+        String mode = rgMode.getCheckedRadioButtonId() == R.id.rbOnsite
+                ? getString(R.string.mode_onsite)
+                : getString(R.string.mode_remote);
+
+        String newsletter = swNewsletter.isChecked()
+                ? getString(R.string.yes_short)
+                : getString(R.string.no_short);
+
+        return getString(R.string.summary_format,
+                etName.getText().toString().trim(),
+                etEmail.getText().toString().trim(),
+                birthDate,
+                spCourse.getSelectedItem().toString(),
+                mode,
+                sbLevel.getProgress(),
+                newsletter);
     }
 }
